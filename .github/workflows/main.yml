@@ -1,0 +1,13 @@
+- name: snakemake
+  # You may pin to the exact commit or the version.
+  # uses: snakemake/snakemake-github-action@312b31388136c04b5e7c2b1275142a39a245d89f
+  uses: snakemake/snakemake-github-action@v1.22.0
+  with:
+    # Working directory for the execution
+    directory: # default is .test
+    # Snakefile containing the workflow description
+    snakefile: # optional, default is Snakefile
+    # Additional Snakemake arguments to use
+    args: # optional, default is 
+    # Additional steps to prepare the workflow for execution
+    stagein: # optional, default is 

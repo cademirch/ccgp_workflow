@@ -288,7 +288,11 @@ def createListsGetIndices(maxIntervalLen, maxBpPerList, maxIntervalsPerList, min
     for Nmer in maxIntervalLenByNmer:
         if maxIntervalLenByNmer[Nmer] < maxIntervalLen:
             lessThan.append(Nmer)
+<<<<<<< HEAD:workflow/helperFun.py
 
+=======
+                
+>>>>>>> main:helperFun.py
     outfile = os.path.join(outputDir, wildcards.Organism, wildcards.refGenome, intDir, wildcards.refGenome + "_interval_algo.out")
     out = open(outfile,'w')
     print("Here are the actual maximum interval lengths we observed, for each minimum Nmer size used to split up the genome.", file=out)
@@ -339,8 +343,21 @@ def createListsGetIndices(maxIntervalLen, maxBpPerList, maxIntervalsPerList, min
                 else:
                     printIntervalsToListFile(intDir, listFile_index, current_intervals, wildcards, outputDir)
                     current_intervals = [ (scaff, start, stop) ]
+<<<<<<< HEAD:workflow/helperFun.py
                     runningSumBp = intervalLen
                     runningSum_intervals = 1
+=======
+                # flush out current_intervals into a list file
+                printIntervalsToListFile(intDir, listFile_index, current_intervals, wildcards, outputDir)
+                #out = open(f"{intDir}list{listFile_index}.list", 'w')
+                #for i in current_intervals:
+                #    print(f"{i[0]}:{i[1]}-{i[2]}", file=out)
+                #out.close()
+                # re-initialize data for next list file
+                current_intervals = [ (scaff, start, stop) ]
+                runningSumBp = intervalLen
+                runningSum_intervals = 1 
+>>>>>>> main:helperFun.py
                 listFile_index += 1
             else:
                 current_intervals.append( (scaff, start, stop) )
@@ -358,7 +375,11 @@ def createListsGetIndices(maxIntervalLen, maxBpPerList, maxIntervalsPerList, min
     # get list file indices
     gatk_list_dir = os.path.join(outputDir, wildcards.Organism, wildcards.refGenome, intDir)
     LISTS = glob.glob(gatk_list_dir + "/*.list")
+<<<<<<< HEAD:workflow/helperFun.py
     print(LISTS)
+=======
+    print(LISTS)	
+>>>>>>> main:helperFun.py
     for i in range(len(LISTS)):
         LISTS[i] = os.path.basename(LISTS[i])
         LISTS[i] = re.search('\d+', LISTS[i]).group() # get numerical index of list
@@ -378,6 +399,7 @@ def overlaps(a, b):
 
 def printIntervalsToListFile(intDir, listFile_index, current_intervals, wildcards, outputDir):
     gatk_list_dir = os.path.join(outputDir, wildcards.Organism, wildcards.refGenome, intDir)
+<<<<<<< HEAD:workflow/helperFun.py
 
     if not os.path.isdir(gatk_list_dir):
         os.mkdir(gatk_list_dir)
@@ -385,6 +407,15 @@ def printIntervalsToListFile(intDir, listFile_index, current_intervals, wildcard
     outfile = os.path.join(gatk_list_dir, f"list{listFile_index}.list")
     out = open(outfile, 'w')
 
+=======
+    
+    if not os.path.isdir(gatk_list_dir):
+        os.mkdir(gatk_list_dir)
+    
+    outfile = os.path.join(gatk_list_dir, f"list{listFile_index}.list")
+    out = open(outfile, 'w')
+    
+>>>>>>> main:helperFun.py
     for i in current_intervals:
         print(f"{i[0]}:{i[1]}-{i[2]}", file=out)
     out.close()
@@ -415,6 +446,10 @@ def getListIndices(intDir):
     LISTS=sorted(LISTS)
     return(LISTS)
 
+<<<<<<< HEAD:workflow/helperFun.py
 def make_temp_dir():
     if not os.path.exists("./tmp"):
         os.mkdir("./tmp")
+=======
+
+>>>>>>> main:helperFun.py

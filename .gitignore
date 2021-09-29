@@ -18,7 +18,11 @@ data/BHduck/genome/*.ann
 data/BHduck/genome/*.amb
 data/BHduck/genome/*.fai
 data/BHduck/genome/*.dict
+<<<<<<< HEAD
 /data/
+=======
+data/
+>>>>>>> main
 fastp.*
 intervalFiles/
 out
@@ -31,5 +35,9 @@ freebayes/
 gatk/
 logs/
 *_dryrun.txt
+<<<<<<< HEAD
 results/
 tmp/
+=======
+results/
+>>>>>>> main

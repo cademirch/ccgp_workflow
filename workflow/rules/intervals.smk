@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 rule process_ref:
     """
     This rule generates a .fai file from the reference genome, which are required for GATK to run properly. GATK also needs a .dict file, but this was previously generated.
@@ -17,7 +15,6 @@ rule process_ref:
         "samtools faidx {input.ref} --output {output.fai}\n"
         "picard CreateSequenceDictionary REFERENCE={input.ref} OUTPUT={output.dictf}\n"
 
->>>>>>> main
 rule picard_intervals:
     input:
         ref = config["refGenomeDir"] + "{refGenome}.fna",
@@ -28,17 +25,6 @@ rule picard_intervals:
     params:
         minNmer = int(config['minNmer'])
     conda:
-<<<<<<< HEAD
-        '../envs/bam2vcf.yml'
-    log:
-        "logs/{Organism}/{refGenome}/picard_intervals/log"
-    resources: 
-        mem_mb = lambda wildcards, attempt: attempt * res_config['process_ref']['mem']   
-    shell:
-        "picard ScatterIntervalsByNs REFERENCE={input.ref} OUTPUT={output.intervals} MAX_TO_MERGE={params.minNmer} &> {log}\n" 
-
-checkpoint create_intervals:
-=======
         "../envs/bam2vcf.yml"
     log:
         "log/{Organism}/{refGenome}/picard_intervals/log"
@@ -48,7 +34,6 @@ checkpoint create_intervals:
         "picard ScatterIntervalsByNs REFERENCE={input.ref} OUTPUT={output.intervals} MAX_TO_MERGE={params.minNmer} > {log}\n" 
 
 rule create_intervals:
->>>>>>> main
     input:
         fai = config["refGenomeDir"] + "{refGenome}.fna" + ".fai",
         dictf = config["refGenomeDir"] + "{refGenome}" + ".dict",
@@ -58,21 +43,10 @@ rule create_intervals:
         maxIntervalLen = int(config['maxIntervalLen']),
         maxBpPerList = int(config['maxBpPerList']),
         maxIntervalsPerList = int(config['maxIntervalsPerList']),
-<<<<<<< HEAD
-        minNmer = int(config['minNmer']),
-=======
         minNmer = int(config['minNmer'])
->>>>>>> main
     output: 
         config['output'] + "{Organism}/{refGenome}/" + config["intDir"] + "{refGenome}_intervals_fb.bed"
     resources: 
         mem_mb = lambda wildcards, attempt: attempt * res_config['create_intervals']['mem'] 
     run:
-<<<<<<< HEAD
-        if config['split_by_n']:
-            LISTS = helperFun.createListsGetIndices(params.maxIntervalLen, params.maxBpPerList, params.maxIntervalsPerList, params.minNmer, config["output"], config["intDir"], wildcards, input.dictf, input.intervals)
-        else:
-            LISTS = make_intervals(config["output"], config["intDir"], wildcards, input.dictf)
-=======
         LISTS = helperFun.createListsGetIndices(params.maxIntervalLen, params.maxBpPerList, params.maxIntervalsPerList, params.minNmer, config["output"], config["intDir"], wildcards, input.dictf, input.intervals)
->>>>>>> main

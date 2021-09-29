@@ -1,28 +1,8 @@
 import glob
 import re
 import os
-<<<<<<< HEAD
-from collections import defaultdict, deque
-from snakemake.exceptions import WorkflowError
-### INPUT FUNCTIONS ###
-def get_reads(wildcards):
-    """Returns local read files if present. Defaults to SRR if no local reads in sample sheet."""
-    row = samples.loc[samples['Run'] == wildcards.run]
-    if 'fq1' in samples.columns and 'fq2' in samples.columns:
-        if os.path.exists(row.fq1.item()) and os.path.exists(row.fq2.item()):
-            r1 = row.fq1.item()
-            r2 = row.fq2.item()
-            return {"r1": r1, "r2": r2}
-        else:
-            raise WorkflowError(f"fq1 and fq2 specified for {wildcards.sample}, but files were not found.")
-    else:
-        r1 = config["fastqDir"] + f"{wildcards.Organism}/{wildcards.sample}/{wildcards.run}_1.fastq.gz",
-        r2 = config["fastqDir"] + f"{wildcards.Organism}/{wildcards.sample}/{wildcards.run}_2.fastq.gz"
-        return {"r1": r1, "r2": r2}
-=======
 
 ### INPUT FUNCTIONS ###
->>>>>>> main
 def get_read_group(wildcards):
     """Denote sample name and library_id in read group."""
     return r"-R '@RG\tID:{lib}\tSM:{sample}\tPL:ILLUMINA'".format(
@@ -44,10 +24,6 @@ def get_gather_vcfs(wildcards):
     """
     Gets filtered vcfs for gathering step. This function gets the interval list indicies from the corresponding
     genome, then produces the file names for the filtered vcf with list index."""
-<<<<<<< HEAD
-    checkpoint_output = checkpoints.create_intervals.get(**wildcards).output[0]
-=======
->>>>>>> main
     list_dir_search = os.path.join(config['output'], wildcards.Organism, wildcards.refGenome, config['intDir'], "*.list")
     list_files = glob.glob(list_dir_search)
     out = []
@@ -77,39 +53,7 @@ def write_db_mapfile(wildcards):
 
 def get_input_for_mapfile(wildcards):
     sample_names = samples.loc[(samples['Organism'] == wildcards.Organism) & (samples['refGenome'] == wildcards.refGenome)]['BioSample'].tolist()
-<<<<<<< HEAD
-    gvcfs = expand(config['output'] + "{{Organism}}/{{refGenome}}/" + config['gvcfDir'] + "{sample}/" + "L{{list}}.raw.g.vcf.gz", sample=sample_names, **wildcards)
-    gvcfs_idx = expand(config['output'] + "{{Organism}}/{{refGenome}}/" + config['gvcfDir'] + "{sample}/" + "L{{list}}.raw.g.vcf.gz.tbi", sample=sample_names, **wildcards)
-    doneFiles = expand(config['output'] + "{{Organism}}/{{refGenome}}/" + config['gvcfDir'] + "{sample}/" + "L{{list}}.done", sample=sample_names, **wildcards)
-    
-    return {'gvcfs': gvcfs, 'gvcfs_idx': gvcfs_idx, 'doneFiles': doneFiles}
-
-def make_intervals(outputDir, intDir, wildcards, dict_file):
-    """Creates interval list files for parallelizing haplotypeCaller and friends. Writes one contig/chromosome per list file."""
-    
-    with open(dict_file, "r") as f:  # Read dict file to get contig info
-        contigs = defaultdict()
-        for line in f:
-            if line.startswith("@SQ"):
-                line = line.split("\t")
-                chrom = line[1].split("SN:")[1]
-                ln = int(line[2].split("LN:")[1])
-                contigs[chrom] = ln
-        
-        interval_file = os.path.join(outputDir,wildcards.Organism,wildcards.refGenome,intDir, f"{wildcards.refGenome}_intervals_fb.bed")
-        with open(interval_file, "w") as fh:
-            for contig, ln in contigs.items():
-                print(f"{contig}\t1\t{ln}", file=fh)
-        
-        for i, (contig, ln) in enumerate(contigs.items()):
-            interval_list_file = os.path.join(outputDir, wildcards.Organism, wildcards.refGenome, intDir, f"list{i}.list")
-            with open(interval_list_file, "w") as f:
-                print(f"{contig}:1-{ln}", file=f)
-            
-            
-=======
     gvcfs = expand(config['output'] + "{{Organism}}/{{refGenome}}/" + config['gvcfDir'] + "{sample}/" + "L{{list}}.raw.g.vcf.gz", sample=sample_names)
     gvcfs_idx = expand(config['output'] + "{{Organism}}/{{refGenome}}/" + config['gvcfDir'] + "{sample}/" + "L{{list}}.raw.g.vcf.gz.tbi", sample=sample_names)
     doneFiles = expand(config['output'] + "{{Organism}}/{{refGenome}}/" + config['gvcfDir'] + "{sample}/" + "L{{list}}.done", sample=sample_names)
     return {'gvcfs': gvcfs, 'gvcfs_idx': gvcfs_idx, 'doneFiles': doneFiles}
->>>>>>> main

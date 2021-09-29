@@ -10,19 +10,33 @@ rule bam2gvcf:
         fai = config["refGenomeDir"] + "{refGenome}.fna" + ".fai",
         dictf = config["refGenomeDir"] + "{refGenome}" + ".dict",
         bam = config['output'] + "{Organism}/{refGenome}/" + config['bamDir'] + "{sample}" + config['bam_suffix'],
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+        int = config['output'] + "{Organism}/{refGenome}/" + config["intDir"] + "{refGenome}_intervals_fb.bed"
+    output:
+        gvcf = config['output'] + "{Organism}/{refGenome}/" + config['gvcfDir'] + "{sample}/" + "L{list}.raw.g.vcf.gz",
+        gvcf_idx = config['output'] + "{Organism}/{refGenome}/" + config['gvcfDir'] + "{sample}/" + "L{list}.raw.g.vcf.gz.tbi",
+        doneFile = touch(config['output'] + "{Organism}/{refGenome}/" + config['gvcfDir'] + "{sample}/" + "L{list}.done")
+    resources:
+=======
         l = config['output'] + "{Organism}/{refGenome}/" + config['intDir'] + "list{list}.list",
     output: 
         gvcf = config['output'] + "{Organism}/{refGenome}/" + config['gvcfDir'] + "{sample}/" + "L{list}.raw.g.vcf.gz",
         gvcf_idx = config['output'] + "{Organism}/{refGenome}/" + config['gvcfDir'] + "{sample}/" + "L{list}.raw.g.vcf.gz.tbi",
         doneFile = touch(config['output'] + "{Organism}/{refGenome}/" + config['gvcfDir'] + "{sample}/" + "L{list}.done")
     resources: 
+>>>>>>> main:rules/bam2vcf_gatk.smk
         #!The -Xmx value the tool is run with should be less than the total amount of physical memory available by at least a few GB
         # subtract that memory here
         mem_mb = lambda wildcards, attempt: attempt * res_config['bam2gvcf']['mem'],   # this is the overall memory requested
         reduced = lambda wildcards, attempt: attempt * (res_config['bam2gvcf']['mem'] - 3000)  # this is the maximum amount given to java
+    log:
+        "logs/{Organism}/bam2gvcf/{refGenome}_{sample}_{list}.txt"
+    benchmark:
+        "benchmarks/{Organism}/bam2gvcf/{refGenome}_{sample}_{list}.txt"
     params:
         minPrun = config['minP'],
-        minDang = config['minD']
+        minDang = config['minD'],
+        l = config['output'] + "{Organism}/{refGenome}/" + config['intDir'] + "list{list}.list"
     conda:
         "../envs/bam2vcf.yml"
     shell:
@@ -31,8 +45,8 @@ rule bam2gvcf:
         "-R {input.ref} "
         "-I {input.bam} "
         "-O {output.gvcf} "
-        "-L {input.l} "
-        "--emit-ref-confidence GVCF --min-pruning {params.minPrun} --min-dangling-branch-length {params.minDang}"
+        "-L {params.l} "
+        "--emit-ref-confidence GVCF --min-pruning {params.minPrun} --min-dangling-branch-length {params.minDang} &> {log}"
 
 rule mkDBmapfile:
     """
@@ -51,21 +65,33 @@ rule mkDBmapfile:
 
 rule gvcf2DB:
     """
-    This rule gathers results for a given list file name, so the workflow is now scattered in only a single dimension. 
+    This rule gathers results for a given list file name, so the workflow is now scattered in only a single dimension.
     Here we take many gvcfs for a particular list of scaffolds and combine them into a GenomicsDB.
     Samples are thus gathered by a shared list name, but lists are still scattered.
     """
     input:
         l = config['output'] + "{Organism}/{refGenome}/" + config['intDir'] + "list{list}.list",
         dbMapFile = config['output'] + "{Organism}/{refGenome}/" + config['dbDir'] + "DB_mapfile_L{list}"
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+    output:
+=======
     output: 
+>>>>>>> main:rules/bam2vcf_gatk.smk
         DB = directory(config['output'] + "{Organism}/{refGenome}/" + config['dbDir'] + "DB_L{list}"),
         done = touch(config['output'] + "{Organism}/{refGenome}/" + config['dbDir'] + "DB_L{list}.done")
     params:
         tmp_dir = config['tmp_dir']
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+    resources:
+=======
     resources: 
+>>>>>>> main:rules/bam2vcf_gatk.smk
         mem_mb = lambda wildcards, attempt: attempt * res_config['gvcf2DB']['mem'],   # this is the overall memory requested
         reduced = lambda wildcards, attempt: attempt * (res_config['gvcf2DB']['mem'] - 3000)  # this is the maximum amount given to java
+    log:
+        "logs/{Organism}/gvcf2DB/{refGenome}_{list}.txt"
+    benchmark:
+        "benchmarks/{Organism}/gvcf2DB/{refGenome}_{list}.txt"
     conda:
         "../envs/bam2vcf.yml"
     shell:
@@ -77,7 +103,11 @@ rule gvcf2DB:
         "--genomicsdb-workspace-path {output.DB} "
         "-L {input.l} "
         "--tmp-dir {params.tmp_dir} "
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+        "--sample-name-map {input.dbMapFile} &> {log}"
+=======
         "--sample-name-map {input.dbMapFile} \n"
+>>>>>>> main:rules/bam2vcf_gatk.smk
 
 rule DB2vcf:
     """
@@ -88,13 +118,25 @@ rule DB2vcf:
         DB = config['output'] + "{Organism}/{refGenome}/" + config['dbDir'] + "DB_L{list}",
         ref = config["refGenomeDir"] + "{refGenome}.fna",
         doneFile = config['output'] + "{Organism}/{refGenome}/" + config['dbDir'] + "DB_L{list}.done"
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+    output:
+        config['output'] + "{Organism}/{refGenome}/" + config["vcfDir_gatk"] + "L{list}.vcf",
+    params:
+        tmp_dir = config['tmp_dir']
+    resources:
+=======
     output: 
         config['output'] + "{Organism}/{refGenome}/" + config["vcfDir_gatk"] + "L{list}.vcf",
     params:
         tmp_dir = config['tmp_dir']
     resources: 
+>>>>>>> main:rules/bam2vcf_gatk.smk
         mem_mb = lambda wildcards, attempt: attempt * res_config['DB2vcf']['mem'],   # this is the overall memory requested
         reduced = lambda wildcards, attempt: attempt * (res_config['DB2vcf']['mem'] - 3000)  # this is the maximum amount given to java
+    log:
+        "logs/{Organism}/db2vcf/{refGenome}_{list}.txt"
+    benchmark:
+        "benchmarks/{Organism}/db2vcf/{refGenome}_{list}.txt"
     conda:
         "../envs/bam2vcf.yml"
     shell:
@@ -103,25 +145,42 @@ rule DB2vcf:
         "-R {input.ref} "
         "-V gendb://{input.DB} "
         "-O {output} "
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+        "--tmp-dir {params.tmp_dir} &> {log}"
+=======
         "--tmp-dir {params.tmp_dir}"
+>>>>>>> main:rules/bam2vcf_gatk.smk
 
 rule filterVcfs:
     """
-    This rule filters all of the VCFs, then gathers, one per list, into one final VCF
+    This rule filters all of the VCFs
     """
     input:
         vcf = config['output'] + "{Organism}/{refGenome}/" + config["vcfDir_gatk"] + "L{list}.vcf",
         ref = config["refGenomeDir"] + "{refGenome}.fna"
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+    output:
+        vcf = temp(config['output'] + "{Organism}/{refGenome}/" + config["vcfDir_gatk"] + "filtered_L{list}.vcf")
+=======
     output: 
         vcf = config['output'] + "{Organism}/{refGenome}/" + config["vcfDir_gatk"] + "filtered_L{list}.vcf"
+>>>>>>> main:rules/bam2vcf_gatk.smk
     conda:
         "../envs/bam2vcf.yml"
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * res_config['gatherVcfs']['mem']   # this is the overall memory requested
+        mem_mb = lambda wildcards, attempt: attempt * res_config['filterVcfs']['mem']   # this is the overall memory requested
+    log:
+        "logs/{Organism}/filterVcfs/{refGenome}_{list}.txt"
+    benchmark:
+        "benchmarks/{Organism}/filterVcfs/{refGenome}_{list}.txt"
     shell:
         "gatk VariantFiltration "
         "-R {input.ref} "
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+        "-V {input.vcf} "
+=======
         "-V {input.vcf} " 
+>>>>>>> main:rules/bam2vcf_gatk.smk
         "--output {output.vcf} "
         "--filter-name \"RPRS_filter\" "
         "--filter-expression \"(vc.isSNP() && (vc.hasAttribute('ReadPosRankSum') && ReadPosRankSum < -8.0)) || ((vc.isIndel() || vc.isMixed()) && (vc.hasAttribute('ReadPosRankSum') && ReadPosRankSum < -20.0)) || (vc.hasAttribute('QD') && QD < 2.0)\" "
@@ -131,6 +190,17 @@ rule filterVcfs:
         "--filter-expression \"vc.isSNP() && ((vc.hasAttribute('MQ') && MQ < 40.0) || (vc.hasAttribute('MQRankSum') && MQRankSum < -12.5))\" "
         "--filter-name \"QUAL_filter\" "
         "--filter-expression \"QUAL < 30.0\" "
+<<<<<<< HEAD:workflow/rules/bam2vcf_gatk.smk
+        "--invalidate-previous-filters true &> {log}"
+
+rule sort_gatherVcfs:
+    input: 
+        get_gather_vcfs
+    output: 
+        vcfFinal = config['output'] + "{Organism}/{refGenome}/" + "{Organism}_{refGenome}.final.vcf.gz"
+    params:
+        gather_vcfs_CLI
+=======
         "--invalidate-previous-filters true\n"
 
 rule gatherVcfs:
@@ -156,10 +226,16 @@ rule vcftools:
     output: 
         missing = config['output'] + "{Organism}/{refGenome}/" + "{Organism}_{refGenome}_missing_data_per_ind.txt",
         SNPsPerInt = config['output'] + "{Organism}/{refGenome}/" + "{Organism}_{refGenome}_SNP_per_interval.txt"
+>>>>>>> main:rules/bam2vcf_gatk.smk
     conda:
         "../envs/bam2vcf.yml"
     resources:
-        mem_mb = lambda wildcards, attempt: attempt * res_config['vcftools']['mem']    # this is the overall memory requested
+        mem_mb = lambda wildcards, attempt: attempt * res_config['gatherVcfs']['mem']
+    log:
+        "logs/{Organism}/sortVcf/{refGenome}.txt"
+    benchmark:
+        "benchmarks/{Organism}/sortVcf/{refGenome}.txt"
     shell:
-        "vcftools --gzvcf {input.vcf} --remove-filtered-all --minDP 1 --stdout --missing-indv > {output.missing}\n"
-        "bedtools intersect -a {input.int} -b {input.vcf} -c > {output.SNPsPerInt}"
+        "gatk SortVcf "
+        "{params} "
+        "-O {output.vcfFinal} &> {log}"

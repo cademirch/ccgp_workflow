@@ -7,9 +7,7 @@ resource_config: "config/resources.yaml"  # path to resources yaml config
 final_prefix: "" # prefix for final output files
 intervals: True    #Set to True if you want to perform variant calling using interval approach. 
 sentieon: True  #set to True if you want to use sentieon, False if you want GATK
-sentieon_lic: "UCSC_Enbody_eval.lic" #set to path of sentieon license
-remote_reads: False # Set True if reads are in a Google Bucket seperate from --default-remote-prefix. 
-remote_reads_prefix: "ccgp-raw-reads/41-Cyanocitta" # set to google bucket prefix where reads live
+sentieon_lic: "" #set to path of sentieon license
 
 ##############################
 # Variables you *might* need to change
@@ -50,3 +48,5 @@ callable_merge: 100   #merge callable regions separated by this or fewer bp into
 ## QC options ##
 nClusters: 3
 GoogleAPIKey:
+remote_reads: False # Set True if reads are in a Google Bucket seperate from --default-remote-prefix. 
+remote_reads_prefix: "ccgp-raw-reads/41-Cyanocitta" # set to google bucket prefix where reads live
